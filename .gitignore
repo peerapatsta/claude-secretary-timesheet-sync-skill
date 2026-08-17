@@ -1,0 +1,22 @@
+# This repo is TOOLS ONLY — no timesheet data should ever land here.
+# The installer puts your log wherever `dataRoot` points, never inside this repo.
+# Anchored to the repo root so templates/activity-log.md (the seed) still ships.
+/timesheet-data/
+/activity-log.md
+/activity-log.csv
+/activity-log.xlsx
+/raw/
+/sync.log
+/timesheet-config.json
+*.jsonl
+
+# Python
+__pycache__/
+*.pyc
+
+# Editor / OS noise
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.bak

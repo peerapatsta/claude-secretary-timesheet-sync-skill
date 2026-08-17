@@ -1,0 +1,18 @@
+# Regenerable artifacts — no need to sync these
+*.xlsx
+__pycache__/
+*.pyc
+
+# ...except the canonical timesheet CSV, which we DO sync as a flat view
+*.csv
+!timesheet/activity-log.csv
+
+# Local run log from sync-push
+timesheet/sync.log
+
+# Editor/OS noise
+.DS_Store
+Thumbs.db
+
+# NOTE: timesheet/raw/**/*.jsonl IS tracked on purpose — that's the
+# cross-machine activity data. Do not ignore it.

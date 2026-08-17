@@ -1,0 +1,43 @@
+{
+  "version": 1,
+
+  "_comment_dataRoot": "Where YOUR timesheet data lives (activity-log.md + raw/). Written by install.ps1. If sync.enabled, this is <sync.repoRoot>\\timesheet.",
+  "dataRoot": "",
+  "toolsRoot": "",
+
+  "_comment_machine": "Identifies this computer in raw/<machine>/. Defaults to $env:COMPUTERNAME.",
+  "machine": "",
+
+  "_comment_time": "timezoneOffsetHours = your local UTC offset (Bangkok = 7). idleCapMinutes = a gap longer than this counts as 'away', not work.",
+  "timezoneOffsetHours": 7,
+  "idleCapMinutes": 25,
+
+  "_comment_lastSubmitted": "Date of the last timesheet you already submitted (YYYY-MM-DD). The session banner offers to backfill days after it. Leave \"\" to disable the offer.",
+  "lastSubmitted": "",
+
+  "sync": {
+    "enabled": false,
+    "repoRoot": "",
+    "autoPush": true
+  },
+
+  "_comment_projects": "Maps a working directory to a short project name, first match wins. 'match' is a case-insensitive regex tested against the full lowercased path. No match -> the folder name is used.",
+  "projects": [
+    { "match": "acme-billing|billing-api", "name": "BILLING" },
+    { "match": "acme-web|storefront",      "name": "WEB" },
+    { "match": "runbook|devops?",          "name": "DevOps" }
+  ],
+
+  "_comment_git": "Used when backfilling from git history. authorPattern is passed to `git log --author`; searchRoots are scanned for repos; hostMap turns a remote host into a project short name.",
+  "git": {
+    "authorPattern": "",
+    "searchRoots": [
+      "~/Documents",
+      "~/source/repos"
+    ],
+    "hostMap": {
+      "gitlab.example.com": "BILLING",
+      "github.com": "WEB"
+    }
+  }
+}
