@@ -1,0 +1,7 @@
+# Normalize on checkin; PowerShell and Python read either ending on Windows.
+* text=auto
+
+*.ps1 text
+*.py  text
+*.md  text
+*.json text
