@@ -20,8 +20,10 @@ cd C:\tools\claude-secretary-timesheet-sync-skill
 
 ## Step 2 — Run the installer
 
-Pick the mode you want. Start with local-only if you're not sure — you can
-re-run the installer later with `-DataRepo` to upgrade to sync.
+Pick the mode you want. **Start with local-only if you're not sure** — when you
+later get a second machine, re-run the installer with `-DataRepo` and it moves
+your existing `activity-log.md` and `raw\` across for you. Nothing is lost, and
+you never have to decide up front.
 
 ```powershell
 # A) local only — log lives in <Documents>\claude-timesheet-data
@@ -40,7 +42,7 @@ What it does:
 
 | # | Action |
 |---|---|
-| 1 | Seeds your data folder: `activity-log.md`, `raw\<MACHINE>\` |
+| 1 | Seeds your data folder: `activity-log.md`, `raw\<MACHINE>\` — and if a previous install used a different location, **moves** the log + `raw\` exports across |
 | 2 | Junctions `~\.claude\timesheet-tools`, `~\.claude\timesheet-data`, `~\.claude\skills\timesheet` |
 | 3 | Writes `~\.claude\timesheet-config.json` (an existing one is backed up and its settings kept) |
 | 4 | Merges the SessionStart/SessionEnd hooks + `statusLine` into `~\.claude\settings.json` (backup first) |
@@ -106,8 +108,11 @@ powershell -NoProfile -File "$env:USERPROFILE\.claude\timesheet-tools\scripts\do
 
 ## Step 5 — (Optional) Your own private data repo
 
-This is how you keep one log across several computers, and how you get a real
-history of your hours instead of last-write-wins file sync.
+**You do not need a repo to use this.** Local-only (step 2A) gives you the
+session prompt, the status line, measured hours, backfill, reports and exports.
+A repo buys you exactly one thing: **one log across several computers**, plus a
+real git history of your hours instead of last-write-wins file sync. One
+machine → skip this step.
 
 **Keep it PRIVATE.** It holds your real hours, the repos and branches you worked
 on, the files you edited and your commit subjects.
@@ -119,8 +124,11 @@ cd C:\tools\claude-secretary-timesheet-sync-skill
 powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -DataRepo C:\src\my-timesheet-data
 ```
 
-The installer seeds `.gitignore` + `README.md` in it and sets
-`dataRoot = <repo>\timesheet`. From then on:
+The installer seeds `.gitignore` + `README.md` in it, sets
+`dataRoot = <repo>\timesheet`, and **moves an existing log + `raw\` exports in
+from wherever the last install put them**. If the repo already contains a log,
+it refuses to merge and tells you to combine the rows by hand rather than
+overwrite either one. From then on:
 
 - **hourly Scheduled Task** → `sync-push.ps1`: `git pull --rebase --autostash`,
   export this machine's activity, commit, push
@@ -199,7 +207,20 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1   # idempotent
 
 The junctions mean a `git pull` alone already updates the skill and the scripts;
 re-running the installer just re-checks the hooks and the config schema. Your
-`projects` rules and your log are never overwritten.
+`projects` rules and your log are never overwritten. Re-running it with a
+*different* `-DataRepo`/`-DataDir` also moves your data to the new location.
+
+### Moving your log somewhere else
+
+Just re-run the installer pointing at the new place — the log and `raw\` follow:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -DataRepo C:\src\my-timesheet-data
+```
+
+The only case it won't handle is when *both* locations already hold an
+`activity-log.md`: it leaves both alone and asks you to merge the rows yourself,
+because there is no safe way to guess which rows win.
 
 ## Uninstalling
 
@@ -223,6 +244,7 @@ Removes the junctions, the hooks, the statusLine and the scheduled task.
 | `Python was not found` | That's the Microsoft Store stub. Install Python 3 from python.org and tick "Add to PATH" |
 | `no sessions in range` | No Claude Code transcripts under `~\.claude\projects` for those dates |
 | `reconcile.py` sees one machine | Sync off, or the other machines haven't pushed → `git pull`, check `doctor.ps1` |
+| Log looks empty after switching to a repo | The installer says `NOT merged automatically` when both places have a log — your rows are still at the old `dataRoot`; merge them in by hand |
 | Hourly sync never runs | Laptop on battery → the installer already sets `AllowStartIfOnBatteries`; re-run `install.ps1` if the task predates that |
 | Hours look too high | Lower `idleCapMinutes`; long unattended runs count as active up to that cap |
 | Wrong day for late-night work | `timezoneOffsetHours` doesn't match your locale |

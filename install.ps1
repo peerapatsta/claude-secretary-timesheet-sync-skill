@@ -8,7 +8,9 @@
          ~\.claude\timesheet-data    -> your data folder
          ~\.claude\skills\timesheet  -> <this repo>\skills\timesheet
     2. Writes ~\.claude\timesheet-config.json (existing settings are PRESERVED)
-    3. Seeds your data folder (activity-log.md, raw\, .gitignore)
+    3. Seeds your data folder (activity-log.md, raw\, .gitignore) - and if a
+       previous install pointed somewhere else, MOVES the existing log + raw\
+       exports across, so "start local, add -DataRepo later" keeps your history
     4. Merges hooks + statusLine into ~\.claude\settings.json (idempotent + backup)
     5. Optional: hourly Scheduled Task running sync-push.ps1
     6. Runs an initial activity export
@@ -101,9 +103,57 @@ function New-JunctionSafe {
   Write-Host "  link   $Link -> $Target" -ForegroundColor Green
 }
 
+# Move an existing log + raw exports to a new dataRoot. The upgrade path
+# "start local, add -DataRepo once you get a second machine" is the one people
+# actually walk, and without this the installer would seed a blank log in the
+# repo and silently orphan the real one.
+function Move-TsData {
+  param([string]$From, [string]$To)
+  $fromLog = Join-Path $From 'activity-log.md'
+  $fromRaw = Join-Path $From 'raw'
+  if (-not (Test-Path $fromLog) -and -not (Test-Path $fromRaw)) { return $false }
+
+  $toLog = Join-Path $To 'activity-log.md'
+  if (Test-Path $toLog) {
+    Write-Host "  ! an older log exists at $From" -ForegroundColor Yellow
+    Write-Host "    and $To already has activity-log.md - NOT merged automatically." -ForegroundColor Yellow
+    Write-Host "    Merge the rows by hand, then delete the old folder." -ForegroundColor Yellow
+    return $false
+  }
+
+  if (Test-Path $fromLog) {
+    Move-Item $fromLog $toLog
+    Write-Host "  moved  activity-log.md   (from $From)" -ForegroundColor Green
+  }
+  if (Test-Path $fromRaw) {
+    foreach ($m in @(Get-ChildItem $fromRaw -Directory -ErrorAction SilentlyContinue)) {
+      $dest = Join-Path (Join-Path $To 'raw') $m.Name
+      New-Item -ItemType Directory -Force -Path $dest | Out-Null
+      foreach ($f in @(Get-ChildItem $m.FullName -Filter *.jsonl -ErrorAction SilentlyContinue)) {
+        $t = Join-Path $dest $f.Name
+        # Never clobber: the destination copy may already hold sessions this one
+        # doesn't (another machine pushed them).
+        if (Test-Path $t) { Write-Host "  kept   raw\$($m.Name)\$($f.Name) (already in the new location)" }
+        else { Move-Item $f.FullName $t; Write-Host "  moved  raw\$($m.Name)\$($f.Name)" -ForegroundColor Green }
+      }
+    }
+  }
+  # activity-log.csv / .xlsx are derived - regenerate them, don't move them.
+  Write-Host "  old folder left in place (now empty of log data): $From"
+  return $true
+}
+
 # ---- resolve the data location ---------------------------------------------
 $syncEnabled = $false
 $repoRoot    = ''
+
+# Read the PREVIOUS dataRoot before step 3 overwrites the config, so step 1 can
+# migrate out of it.
+$prevDataRoot = ''
+$prevCfgPath  = Join-Path $claudeDir 'timesheet-config.json'
+if (Test-Path $prevCfgPath) {
+  try { $prevDataRoot = ((Get-Content -Raw -Encoding UTF8 $prevCfgPath) | ConvertFrom-Json).dataRoot } catch {}
+}
 
 if ($DataRepo) {
   $syncEnabled = $true
@@ -143,6 +193,11 @@ $linkSkill = Join-Path $claudeDir 'skills\timesheet'
 
 if ($Plan) {
   Write-Host "PLAN (nothing will be changed)"
+  if ($prevDataRoot -and (Test-Path $prevDataRoot) -and
+      (Norm-Path $prevDataRoot) -ne (Norm-Path $dataRoot)) {
+    Write-Host "  migrate  $prevDataRoot"
+    Write-Host "        -> $dataRoot   (activity-log.md + raw\)"
+  }
   Write-Host "  junction $linkTools -> $tools"
   Write-Host "  junction $linkData  -> $dataRoot"
   Write-Host "  junction $linkSkill -> $(Join-Path $tools 'skills\timesheet')"
@@ -156,6 +211,12 @@ if ($Plan) {
 Write-Host "[1/6] data folder"
 New-Item -ItemType Directory -Force -Path $dataRoot | Out-Null
 New-Item -ItemType Directory -Force -Path (Join-Path $dataRoot "raw\$Machine") | Out-Null
+
+if ($prevDataRoot -and (Test-Path $prevDataRoot) -and
+    (Norm-Path $prevDataRoot) -ne (Norm-Path $dataRoot)) {
+  Move-TsData $prevDataRoot $dataRoot | Out-Null
+}
+
 $logFile = Join-Path $dataRoot 'activity-log.md'
 if (-not (Test-Path $logFile)) {
   Copy-Item (Join-Path $tools 'templates\activity-log.md') $logFile

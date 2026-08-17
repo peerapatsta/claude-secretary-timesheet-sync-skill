@@ -28,8 +28,10 @@ folder (or a private repo) that you point the installer at.
   gaps, with an idle cap — not guessed by the model.
 - **Backfill.** "Backfill since June 1" rebuilds unlogged days from commits +
   Claude activity, reconciles the two, and shows you proposed rows to approve.
-- **Multi-machine (optional).** Each computer exports its own activity file into
-  *your* private repo; nothing to merge, hours across machines add up correctly.
+- **Multi-machine (optional).** No repo needed to start — your log is just a
+  folder. Add `-DataRepo` whenever a second computer shows up and the installer
+  moves your history into it; each machine then exports its own activity file,
+  so there is nothing to merge and hours across machines add up correctly.
 - **CSV / XLSX export** for handing in.
 
 Hours are never invented. If a number can't be grounded in a transcript or a
