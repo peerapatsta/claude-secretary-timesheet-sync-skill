@@ -8,7 +8,7 @@ stay generic and update cleanly with `git pull`.
 Lookup order for the config file:
   1. $CLAUDE_TIMESHEET_CONFIG
   2. ~/.claude/timesheet-config.json          <- what install.ps1 writes
-  3. built-in defaults (dataRoot = ~/Documents/claude-timesheet)
+  3. built-in defaults (dataRoot = ~/Documents/claude-timesheet-data)
 
 Import from a sibling script with:
 
@@ -64,7 +64,7 @@ def load() -> dict:
         except Exception as e:  # a broken config must not break `--help`
             print(f"[tsconfig] WARNING: could not read {p}: {e}")
     if not cfg.get("dataRoot"):
-        cfg["dataRoot"] = os.path.expanduser(os.path.join("~", "Documents", "claude-timesheet"))
+        cfg["dataRoot"] = os.path.expanduser(os.path.join("~", "Documents", "claude-timesheet-data"))
     if not cfg.get("machine"):
         cfg["machine"] = os.environ.get("COMPUTERNAME") or os.environ.get("HOSTNAME") or "unknown"
     cfg["dataRoot"] = os.path.expanduser(cfg["dataRoot"])

@@ -1,5 +1,5 @@
 <#
-  claude-timesheet - per-machine installer.
+  claude timesheet secretary - per-machine installer.
 
   Wires this clone into Claude Code on THIS machine:
 
@@ -17,7 +17,7 @@
   *.pre-timesheet.bak first (never deleted).
 
   Usage
-    # local only - log lives in <Documents>\claude-timesheet
+    # local only - log lives in <Documents>\claude-timesheet-data
     powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
 
     # keep your log in your own PRIVATE git repo (already cloned)
@@ -128,10 +128,10 @@ if ($DataRepo) {
 } elseif ($DataDir) {
   $dataRoot = $DataDir
 } else {
-  $dataRoot = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'claude-timesheet'
+  $dataRoot = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'claude-timesheet-data'
 }
 
-Write-Host "claude-timesheet install on $Machine" -ForegroundColor Cyan
+Write-Host "claude timesheet secretary - install on $Machine" -ForegroundColor Cyan
 Write-Host "  tools -> $tools"
 Write-Host "  data  -> $dataRoot"
 if ($syncEnabled) { Write-Host "  sync  -> $repoRoot (git)" } else { Write-Host "  sync  -> off (local only)" }

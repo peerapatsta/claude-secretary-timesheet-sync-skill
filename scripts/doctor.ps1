@@ -22,7 +22,7 @@ function Check($name, $ok, $detail, $fix) {
 }
 
 $claudeDir = Join-Path $env:USERPROFILE '.claude'
-Write-Host "claude-timesheet doctor" -ForegroundColor Cyan
+Write-Host "claude timesheet secretary - doctor" -ForegroundColor Cyan
 Write-Host ""
 
 # --- config ---

@@ -1,4 +1,4 @@
-# INSTRUCTION — set up claude-timesheet on your machine
+# INSTRUCTION — set up claude timesheet secretary on your machine
 
 Everything you need to do, in order. Steps 1–4 are required; 5–7 are optional.
 
@@ -14,8 +14,8 @@ Put it anywhere permanent. The installer links to it in place, so **don't move
 or delete it afterwards.**
 
 ```powershell
-git clone https://github.com/YOUR-USER/claude-timesheet.git C:\tools\claude-timesheet
-cd C:\tools\claude-timesheet
+git clone https://github.com/peerapatsta/claude-secretary-timesheet-sync-skill.git C:\tools\claude-secretary-timesheet-sync-skill
+cd C:\tools\claude-secretary-timesheet-sync-skill
 ```
 
 ## Step 2 — Run the installer
@@ -24,7 +24,7 @@ Pick the mode you want. Start with local-only if you're not sure — you can
 re-run the installer later with `-DataRepo` to upgrade to sync.
 
 ```powershell
-# A) local only — log lives in <Documents>\claude-timesheet
+# A) local only — log lives in <Documents>\claude-timesheet-data
 powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
 
 # B) log lives in YOUR OWN private git repo (see step 5 to create it first)
@@ -115,7 +115,7 @@ on, the files you edited and your commit subjects.
 ```powershell
 # on github.com: New repository -> my-timesheet-data -> Private -> Create
 git clone https://github.com/you/my-timesheet-data.git C:\src\my-timesheet-data
-cd C:\tools\claude-timesheet
+cd C:\tools\claude-secretary-timesheet-sync-skill
 powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -DataRepo C:\src\my-timesheet-data
 ```
 
@@ -192,7 +192,7 @@ mode only):
 ## Updating
 
 ```powershell
-cd C:\tools\claude-timesheet
+cd C:\tools\claude-secretary-timesheet-sync-skill
 git pull
 powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1   # idempotent
 ```

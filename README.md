@@ -1,4 +1,4 @@
-# claude-timesheet
+# claude-secretary-timesheet-sync-skill
 
 A Claude Code skill that keeps your timesheet for you.
 
@@ -40,8 +40,8 @@ commit, Claude asks you instead of filling a blank.
 Windows · PowerShell 5.1+ · Python 3 (python.org) · Claude Code.
 
 ```powershell
-git clone https://github.com/YOUR-USER/claude-timesheet.git C:\tools\claude-timesheet
-cd C:\tools\claude-timesheet
+git clone https://github.com/peerapatsta/claude-secretary-timesheet-sync-skill.git C:\tools\claude-secretary-timesheet-sync-skill
+cd C:\tools\claude-secretary-timesheet-sync-skill
 powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
 ```
 

@@ -1,5 +1,5 @@
 <#
-  claude-timesheet - remove this machine's install.
+  claude timesheet secretary - remove this machine's install.
 
   Removes the junctions, the hooks + statusLine from settings.json, and the
   hourly scheduled task. Your DATA IS NEVER TOUCHED: the log, raw\ and your data
@@ -21,7 +21,7 @@ if (Test-Path $cfgPath) {
   try { $dataRoot = ((Get-Content -Raw -Encoding UTF8 $cfgPath) | ConvertFrom-Json).dataRoot } catch {}
 }
 
-Write-Host "claude-timesheet uninstall" -ForegroundColor Cyan
+Write-Host "claude timesheet secretary - uninstall" -ForegroundColor Cyan
 
 # ---- junctions (remove the LINK only; Remove-Item on a junction does not
 #      recurse into the target, but we use -Force without -Recurse to be sure)

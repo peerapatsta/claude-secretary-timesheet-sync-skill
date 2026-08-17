@@ -41,7 +41,7 @@ function Get-TsConfig {
     }
   }
   if (-not $cfg.dataRoot) {
-    $cfg.dataRoot = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'claude-timesheet'
+    $cfg.dataRoot = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'claude-timesheet-data'
   }
   if (-not $cfg.machine) { $cfg.machine = $env:COMPUTERNAME }
   return $cfg
