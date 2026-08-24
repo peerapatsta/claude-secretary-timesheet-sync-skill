@@ -74,6 +74,9 @@ foreach ($t in @(Get-ScheduledTask -TaskName 'ClaudeTimesheetSync-*' -ErrorActio
   Unregister-ScheduledTask -TaskName $t.TaskName -Confirm:$false
   Write-Host "  removed task $($t.TaskName)" -ForegroundColor Green
 }
+# The no-console-flash launcher the task ran through (see install.ps1 step 5).
+$vbs = Join-Path $claudeDir 'timesheet-sync-hidden.vbs'
+if (Test-Path $vbs) { Remove-Item $vbs -Force; Write-Host "  removed $vbs" -ForegroundColor Green }
 
 # ---- config
 if ($Purge -and (Test-Path $cfgPath)) {

@@ -170,7 +170,7 @@ changes nothing.
 | 2 | Creates junctions: `~\.claude\timesheet-tools`, `~\.claude\timesheet-data`, `~\.claude\skills\timesheet` |
 | 3 | Writes `~\.claude\timesheet-config.json` — an existing one is backed up and **your settings are kept** |
 | 4 | Merges the hooks + `statusLine` into `~\.claude\settings.json` (backup first; your other hooks are left alone) |
-| 5 | Mode 2 only: registers the hourly `ClaudeTimesheetSync-<MACHINE>` task |
+| 5 | Mode 2 only: registers the hourly `ClaudeTimesheetSync-<MACHINE>` task, run hidden via a generated `.vbs` so no console window ever flashes |
 | 6 | Runs a first activity export |
 
 It is safe to re-run any time. A real folder it would replace with a junction is
@@ -334,7 +334,10 @@ you worked on, the files you edited and your commit subjects.
 Once installed with `-DataRepo`:
 
 - **hourly Scheduled Task** → `sync-push.ps1`: `git pull --rebase --autostash`,
-  export this machine's activity, commit, push
+  export this machine's activity, commit, push. The task calls `wscript.exe` with
+  a generated one-line `.vbs`, not `powershell.exe` — Task Scheduler allocates a
+  console before PowerShell can read `-WindowStyle Hidden`, so calling it directly
+  flashes a black window every hour
 - **SessionStart** → `sync-pull.ps1` · **SessionEnd** → `sync-push.ps1`
 
 ### Adding a second computer
@@ -416,6 +419,7 @@ Run `doctor.ps1` first — it names the broken component and the fix.
 | `no sessions in range` | No Claude Code transcripts under `~\.claude\projects` for those dates |
 | `reconcile.py` only sees one machine | Mode 1, or the other machines haven't pushed → `git pull`, then `doctor.ps1` |
 | Log looks empty after switching to a repo | The installer printed `NOT merged automatically` — your rows are still at the old `dataRoot`; merge them in by hand |
+| A black console window flashes every hour | Your task predates the `wscript.exe` launcher — re-run `install.ps1`, then `doctor.ps1` should show `PASS task hidden`. A flash at **boot/logon only** is a different task: Windows' own `\Microsoft\Windows\Hotpatch\Monitoring` (disable it from an admin shell if it bothers you) |
 | Hourly sync never runs | Laptop on battery → the installer sets `AllowStartIfOnBatteries`; re-run `install.ps1` if your task predates that |
 | Hours look too high | Lower `idleCapMinutes` — long unattended runs count as active up to that cap |
 | Work lands on the wrong day | `timezoneOffsetHours` doesn't match where you are |

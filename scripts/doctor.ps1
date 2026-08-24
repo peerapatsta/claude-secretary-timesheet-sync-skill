@@ -88,6 +88,12 @@ if ($cfg.sync.enabled) {
   }
   $task = Get-ScheduledTask -TaskName "ClaudeTimesheetSync-$($cfg.machine)" -ErrorAction SilentlyContinue
   Check 'hourly task' ($null -ne $task) "ClaudeTimesheetSync-$($cfg.machine)" 'run install.ps1 without -NoTask'
+  if ($task) {
+    # A task that calls powershell.exe directly flashes a console window every
+    # hour; install.ps1 routes it through wscript.exe + a .vbs so it stays hidden.
+    $exe = $task.Actions[0].Execute
+    Check 'task hidden' ($exe -match 'wscript') $exe 're-run install.ps1 to stop the hourly console flash'
+  }
 } else {
   Write-Host "  ----  sync                   off (local only)" -ForegroundColor DarkGray
 }
