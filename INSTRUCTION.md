@@ -316,7 +316,8 @@ this repo documents every key.
 | `git.authorPattern` | passed to `git log --author` when backfilling. Auto-filled from `git config user.email` |
 | `git.searchRoots` | folders scanned for git repos during backfill |
 | `git.hostMap` | remote host → project name, e.g. `"gitlab.acme.com": "BILLING"` |
-| `dataRoot` · `machine` · `sync` | written by the installer — change these by re-running it, not by hand |
+| `sync.extraPaths` | repo-relative paths committed *alongside* the timesheet, e.g. `["memory"]`. For when the data repo carries more than hours and you don't want a second scheduled task fighting this one over the same working tree. Empty by default |
+| `dataRoot` · `machine` · `sync.enabled` · `sync.repoRoot` | written by the installer — change these by re-running it, not by hand |
 
 Check what the tooling actually resolved at any time:
 

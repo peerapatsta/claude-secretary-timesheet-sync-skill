@@ -15,10 +15,12 @@
   "_comment_lastSubmitted": "Date of the last timesheet you already submitted (YYYY-MM-DD). The session banner offers to backfill days after it. Leave \"\" to disable the offer.",
   "lastSubmitted": "",
 
+  "_comment_sync": "enabled/repoRoot are written by install.ps1. extraPaths are additional repo-relative paths sync-push commits alongside the timesheet - use it when the data repo also carries something else you want on every machine. Left empty, nothing outside dataRoot is ever touched.",
   "sync": {
     "enabled": false,
     "repoRoot": "",
-    "autoPush": true
+    "autoPush": true,
+    "extraPaths": []
   },
 
   "_comment_projects": "Maps a working directory to a short project name, first match wins. 'match' is a case-insensitive regex tested against the full lowercased path. No match -> the folder name is used.",

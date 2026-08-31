@@ -64,8 +64,18 @@ try {
     Log "export: SKIPPED (no real python found - only the Windows Store stub, if any)"
   }
 
-  Invoke-Git -C $repo add -- $dataRoot | Out-Null
-  $dirty = Invoke-Git -C $repo status --porcelain -- $dataRoot
+  # sync.extraPaths: repo-relative paths committed alongside dataRoot. Lets one
+  # repo carry more than the timesheet (e.g. a junctioned Claude memory folder)
+  # without a second scheduled task racing this one on the same working tree.
+  $targets = @($dataRoot)
+  foreach ($rel in @($cfg.sync.extraPaths)) {
+    if (-not $rel) { continue }
+    $abs = Join-Path $repo $rel
+    if (Test-Path $abs) { $targets += $abs } else { Log "extraPath missing, skipped: $abs" }
+  }
+
+  Invoke-Git -C $repo add -- @targets | Out-Null
+  $dirty = Invoke-Git -C $repo status --porcelain -- @targets
   # Also pick up anything install.ps1 staged at the repo root (.gitignore, README).
   $staged = Invoke-Git -C $repo diff --cached --name-only
   if ($dirty -or $staged) {
