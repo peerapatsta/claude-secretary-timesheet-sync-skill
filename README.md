@@ -135,6 +135,7 @@ scripts/
   export_csv.py          activity-log.md -> .csv
   export_excel.py        activity-log.md -> .xlsx (needs openpyxl)
   session-reminder.ps1   SessionStart banner + instruction
+  check-update.ps1       daily "newer version upstream?" notice (time-boxed)
   statusline-command.ps1 the status line
   set-project.ps1        pin the project for the status line
   sync-pull.ps1          SessionStart: pull your data repo      (Mode 2)

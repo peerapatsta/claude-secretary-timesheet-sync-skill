@@ -23,6 +23,14 @@
     "extraPaths": []
   },
 
+  "_comment_update": "Daily check for a newer version of these tools. When the upstream branch has a commit this clone doesn't, the SessionStart banner says so. checkEveryHours throttles the network call; repo defaults to the clone's origin. Set enabled false to never phone home.",
+  "update": {
+    "enabled": true,
+    "repo": "",
+    "branch": "main",
+    "checkEveryHours": 24
+  },
+
   "_comment_projects": "Maps a working directory to a short project name, first match wins. 'match' is a case-insensitive regex tested against the full lowercased path. No match -> the folder name is used.",
   "projects": [
     { "match": "acme-billing|billing-api", "name": "BILLING" },

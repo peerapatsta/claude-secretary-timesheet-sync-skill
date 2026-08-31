@@ -316,6 +316,7 @@ this repo documents every key.
 | `git.authorPattern` | passed to `git log --author` when backfilling. Auto-filled from `git config user.email` |
 | `git.searchRoots` | folders scanned for git repos during backfill |
 | `git.hostMap` | remote host → project name, e.g. `"gitlab.acme.com": "BILLING"` |
+| `update` | daily check for a newer version of these tools; the banner tells you when one is out. `"enabled": false` never touches the network |
 | `sync.extraPaths` | repo-relative paths committed *alongside* the timesheet, e.g. `["memory"]`. For when the data repo carries more than hours and you don't want a second scheduled task fighting this one over the same working tree. Empty by default |
 | `dataRoot` · `machine` · `sync.enabled` · `sync.repoRoot` | written by the installer — change these by re-running it, not by hand |
 
@@ -381,6 +382,22 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1   # idempotent
 The junctions mean `git pull` alone already updates the skill and the scripts;
 re-running the installer just re-checks the hooks and the config schema. Your
 `projects` rules and your log are never overwritten.
+
+You don't have to remember to check. Once a day the session banner tells you
+when the upstream branch has a commit this clone doesn't:
+
+```
+   ** UPDATE AVAILABLE: timesheet tools - main is at a1b2c3d upstream (just checked).
+      Run: git -C "C:\tools\claude-secretary-timesheet-sync-skill" pull --ff-only ...
+```
+
+The check is time-boxed and fails silent, so being offline or behind a dead VPN
+costs you nothing at session start. Tune it with the `update` block in
+`timesheet-config.json`, or run it yourself:
+
+```powershell
+powershell -NoProfile -File "$env:USERPROFILE\.claude\timesheet-tools\scripts\check-update.ps1" -Force
+```
 
 ### Move your log (including Mode 1 → Mode 2)
 
